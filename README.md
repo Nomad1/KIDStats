@@ -22,4 +22,18 @@ Then a web server hosts PHP page that reads the file and populates the data to H
 
 Note that part of the data is useless without WBJR, meaning that real battery Current, Amp Hours and may be even SOC will remain at fixed values without it.
 
+## Installation
+_Note: it requires at least basic Linux knowledge, since the script is written in Bash and it could be tricky to port it to Windows._
+
+Grab the code from git, put pv.php file to your favorite web server with PHP support (you might need to give it some permissions to read from /tmp/ folder), edit read_midnite.sh script to point to your serial device, and add it to your crontab.
+I.e. I set it to be called every minute: `* * * * * /etc/read_midnite.sh`
+
+After that you can access http://127.0.0.1/pv.php page and see something like that:
+
+![Screenshot]
+(https://github.com/Nomad1/KIDStats/stats.png)
+
+That's all. Enjoy!
+
 P.S. I've also seen people reading KID data with completely different protocol and accessing registers. That would be nice to implement cause there are lot's of gaps, i.e. we don't know real battery charging state and load power with *PC Mode* data.   
+
