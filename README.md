@@ -30,8 +30,7 @@ I.e. I set it to be called every minute: `* * * * * /etc/read_midnite.sh`
 
 After that you can access http://127.0.0.1/pv.php page and see something like that:
 
-![Screenshot]
-(https://github.com/Nomad1/KIDStats/stats.png)
+![Screenshot](https://github.com/Nomad1/KIDStats/blob/master/stats.png?raw=true)
 
 That's all. Enjoy!
 
