@@ -264,7 +264,7 @@ else
 	<td class="bold">Panel Voltage</td><td class="data" id="panelvoltage"><?php echo (($lines[2])/10.0); ?>V</td>
 </tr>
 <tr>
-	<td class="bold">Panel Current</td><td class="data" id="panelcurrent"><?php echo round(($lines[3]*10)/($lines[2]))/1.0; ?>A</td>
+	<td class="bold">Panel Current</td><td class="data" id="panelcurrent"><?php echo round(($lines[3]*100)/($lines[2]))/10.0; ?>A</td>
 </tr>
 <tr>
 	<td class="bold">Panel Power</td><td class="data" id="panelpower"><?php echo (($lines[3])/1.0); ?>W</td>
@@ -288,7 +288,7 @@ else
 	<td class="bold">Total Watt*hours produced</td><td class="data" id="totalkwh"><?php echo ($lines[4])/10.0; ?>kWh</td>
 </tr>
 <tr>
-	<td class="bold">Total Amper*hours produced</td><td class="data" id="totalah"><?php echo ($lines[5])/10.0; ?>Ah</td>
+	<td class="bold">Total Amper*hours stored</td><td class="data" id="totalah"><?php echo ($lines[5])/10.0; ?>Ah</td>
 </tr>
 <tr>
 	<td class="bold">Last Update<td class="data" id="update"><?php echo date("D M j Y G:i:s", $lines[0]); ?></td>
