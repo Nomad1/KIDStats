@@ -34,5 +34,8 @@ After that you can access http://127.0.0.1/pv.php page and see something like th
 
 That's all. Enjoy!
 
+## Extended version
+There is a new Bash script called `read_minite_ext.sh`. It does exactly the same as pv.php but without PHP at all - it generates a web page with all data put in. However pv.php file is still here, it is used as a HTML template and also you can continue to use it with your favorite web server and PHP.
+
 P.S. I've also seen people reading KID data with completely different protocol and accessing registers. That would be nice to implement cause there are lot's of gaps, i.e. we don't know real battery charging state and load power with *PC Mode* data.   
 
