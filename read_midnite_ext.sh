@@ -36,7 +36,8 @@ then
 	tracerstatus_bgcolor="lime"
 
 	error=0
-	case ${lines[10]} in
+	reason=${lines[10]}
+	case $reason in
 		1) eStatus="Wake state";;
 		2) eStatus="Insane Ibatt on WakeUp state (offset changed from off state)";;
 		3) eStatus="Negative current on WakeUp state"; ;;
@@ -71,7 +72,7 @@ then
 		36) eStatus="Battery temperature is Greater than reg address 4161 specified"; ;;
 		38) eStatus="is the new sleep because other charging sources appear to be active"; ;;
 		136) eStatus="Battery temperature fell below MB reg. 4161 - 10 C (Classic turned back on)"; ;;
-		*) eStatus="Unknown (" . $(lines[10]) . ")"; ;;
+		*) eStatus="Unknown ($reason)"; ;;
 	esac
 	if [ $error == "1" ]
 	then
