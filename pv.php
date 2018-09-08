@@ -11,7 +11,14 @@
  *
  */
 
-$tracerstatus_bgcolor = "#dedede";
+// Constant values. Change for your needs!
+// Automatically calculated for your battery voltage, no need to set 22.5 for 24V, etc.
+
+$disconnectVoltage = 9;
+$lowVoltage = 11.25;
+$highVoltage = 15.25;
+
+///
 
 $data = file_get_contents('/tmp/midnite');
 $lines = explode(',',$data);
@@ -65,31 +72,37 @@ case 136: $eStatus = "Battery temperature fell below MB reg. 4161 - 10 C (Classi
 	    $eStatus = "Unknown (" . $lines[10] . ")";
 		break;
 	};
-	if ($error) {
+	if ($error)
+	{
 		$eStatus = "<font color=\"red\">FAULT</font>";
 		$tracerstatus_bgcolor = "red";		
 	}
-	
-	$battStatus = 0; // TODO: 
-	$battLevel = 0; //
-	switch ($battLevel) {
-		case 0: $bStatus = "Normal"; break;
-		case 1: $bStatus = "<font color=\"red\">Overvolt</font>"; break;
-		case 2: $bStatus = "<font color=\"yellow\">Undervolt</font>"; break;
-		case 3: $bStatus = "<font color=\"red\">Low volt disconnect</font>"; break;
-		case 4: { 
-			$bStatus = "<font color=\"red\">FAULT</font>"; 
-			$tracerstatus_bgcolor = "red";
-			break;
-		}
-	}
-	
+
 	$battSoc = $lines[8]/1.0;
+	$battVoltage = (($lines[1])/10.0);
+
+	$divider = round($battVoltage / 12.5); // will give 1x for 6.25-18.25V, 2x for 18.25-31.25V, etc.
+	$battLevel = $battVoltage / $divider; 
+
+	if ($divider == 0)
+	{
+		$bStatus = "<font color=\"red\">FAULT</font>"; 
+		$tracerstatus_bgcolor = "red";
+	}
+	else if ($battLevel < $disconnectVoltage)
+		$bStatus = "<font color=\"red\">Low volt disconnect</font>";
+	else if ($battLevel < $lowVoltage)
+		$bStatus = "<font color=\"yellow\">Undervolt</font>";
+	else if ($battLevel > $highVoltage)
+		$bStatus = "<font color=\"red\">Overvolt</font>";
+	else	
+		$bStatus = "Normal";
 }
 else
 {
 	$connection="Disconnected";
 	$connection_bgcolor = "red";
+	$tracerstatus_bgcolor = "#dedede";
 }
 ?>
 <!DOCTYPE html>
@@ -238,7 +251,7 @@ else
 	<td class="bold">Battery status</td><td class="status" id="batterystatus"><?php echo $bStatus; ?></td>
 </tr>
 <tr>
-	<td class="bold">Equipment status</td><td class="status" id="equipmentstatus"><?php echo $eStatus; ?></td>
+	<td class="bold">Reason For Resting</td><td class="status" id="equipmentstatus"><?php echo $eStatus; ?></td>
 </tr>
 <tr>
 	<td class="bold">Battery SOC</td><td style="padding:0px; height:27px;"><div id="container"><div id="chargepercentg"></div><div id="chargepercentp"><?php echo $battSoc; ?>%</div></div></td>
@@ -252,7 +265,7 @@ else
 	<th colspan=2>-= Midnite KID Data =-</th>
 </tr>
 <tr>
-	<td class="bold">Battery Voltage</td><td class="data" id="batteryvoltage"><?php echo (($lines[1])/10.0); ?>V</td>
+	<td class="bold">Battery Voltage</td><td class="data" id="batteryvoltage"><?php echo $battVoltage; ?>V</td>
 </tr>
 <tr>
 	<td class="bold">Battery Current (WBJR)</td><td class="data" id="batterycurrent"><?php echo (($lines[7])/10.0); ?>A</td>
@@ -285,10 +298,10 @@ else
 	<td class="bold">Battery Temperature</td><td class="data" id="batterytemperature"><?php echo ($lines[6]/10.0); ?><sup>o</sup>C</td>
 </tr>
 <tr>
-	<td class="bold">Total Watt*hours produced</td><td class="data" id="totalkwh"><?php echo ($lines[4])/10.0; ?>kWh</td>
-</tr>
+	<td class="bold">Today Watt*hours produced</td><td class="data" id="totalkwh"><?php echo ($lines[4])/10.0; ?>kWh</td>
+</tr>                    
 <tr>
-	<td class="bold">Total Amper*hours stored</td><td class="data" id="totalah"><?php echo ($lines[5])/10.0; ?>Ah</td>
+	<td class="bold">Today Amper*hours produced</td><td class="data" id="totalah"><?php echo ($lines[5])/10.0; ?>Ah</td>
 </tr>
 <tr>
 	<td class="bold">Last Update<td class="data" id="update"><?php echo date("D M j Y G:i:s", $lines[0]); ?></td>
