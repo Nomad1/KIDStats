@@ -5,13 +5,13 @@ device='/dev/ttyACM0'
 #device='/dev/ttyXRUSB0'
 speed=57600
 
-disconnectVoltage="9.0"
-lowVoltage="11.25"
-highVoltage="15.25"
+disconnectVoltage='9.0'
+lowVoltage='11.25'
+highVoltage='15.25'
 tempFile='/tmp/midnite'
 templateFile='/var/www/pv.php'
 outputFile='/var/www/pv.html'
-
+dateFormat='%a %b %e %Y %T'
 
 tput reset > $device      #it won't hurt but will reset faulty devices
 stty -F $device raw ispeed $speed ospeed $speed cs8 -parenb -cstopb
@@ -80,18 +80,18 @@ then
 		tracerstatus_bgcolor="red"
 	fi
 
-	battSoc=`echo "scale=0; ${lines[8]}/1"|bc -l`
-	battVoltage=`echo "scale=1; ${lines[1]}/10.0"|bc -l`
+	battSoc=${lines[8]}
+	battVoltage=`echo "scale=1; ${lines[1]}/10.0"|bc`
 
-	divider=`echo "scale=0; ($battVoltage / 12.5 + 0.5)/1"|bc -l`  # will give 1x for 6.25-18.25V, 2x for 18.25-31.25V, etc.
-	battNomVoltage=`echo "scale=0; $divider * 12"|bc -l`
-	battLevel=`echo "scale=0; ($battVoltage*10/$divider)/1"|bc -l`
+	divider=`echo "scale=1; x = ($battVoltage / 12.5 + 0.5); scale=0; x / 1"|bc`  # will give 1x for 6.25-18.25V, 2x for 18.25-31.25V, etc.
+	battNomVoltage=`echo "$divider*12"|bc`
+	battLevel=`echo "$battVoltage*10/$divider"|bc`
 
 	#In order for comparison to wrk we need to scale up everything 10x
 
-	disconnectVoltage=`echo "scale=0; ($disconnectVoltage*10)/1"|bc -l`
-	lowVoltage=`echo "scale=0; ($lowVoltage*10)/1"|bc -l`
-	highVoltage=`echo "scale=0; ($highVoltage*10)/1"|bc -l`
+	disconnectVoltage=`echo "$disconnectVoltage*10"|bc`
+	lowVoltage=`echo "$lowVoltage*10"|bc`
+	highVoltage=`echo "$highVoltage*10"|bc`
 
 	if [ "$divider" == "0" ]
 	then
@@ -112,23 +112,23 @@ then
 
 	if [ ${lines[7]} ]
 	then
-		battCurrent=`echo "scale=1; ${lines[7]}/10.0"|bc -l`
+		battCurrent=`echo "scale=1; ${lines[7]}/10.0"|bc`
 	else
 		battCurrent=0
 	fi
-	battPower=`echo "scale=0; ${lines[9]}/1.0"|bc -l`
-	pvVoltage=`echo "scale=1; ${lines[2]}/10.0"|bc -l`
+	battPower=${lines[9]}
+	pvVoltage=`echo "scale=1; ${lines[2]}/10.0"|bc`
 	if [ ${lines[3]} ]
 	then
-		pvPower=`echo "scale=0; ${lines[3]}/1.0"|bc -l`
+		pvPower=${lines[3]}
 	else
 		pvPower=0
 	fi
-	pvCurrent=`echo "scale=1; ($pvPower*10/$pvVoltage)/10.0"|bc -l`
-	battTemperature=`echo "scale=1; ${lines[6]}/10.0"|bc -l`
-	totalKWH=`echo "scale=1; ${lines[4]}/10.0"|bc -l`;
-	totalAH=`echo "scale=1; ${lines[5]}/10.0"|bc -l`;
-	lastUpdate=$(printf "%(%a %b %e %Y %T)T" ${lines[0]})
+	pvCurrent=`echo "scale=1; ($pvPower*10/$pvVoltage)/10.0"|bc`
+	battTemperature=`echo "scale=1; ${lines[6]}/10.0"|bc`
+	totalKWH=`echo "scale=1; ${lines[4]}/10.0"|bc`;
+	totalAH=`echo "scale=1; ${lines[5]}/10.0"|bc`;
+	lastUpdate=$(printf "%($dateFormat)T" ${lines[0]})
 else
 	connection="Disconnected"
 	connection_bgcolor="red"
